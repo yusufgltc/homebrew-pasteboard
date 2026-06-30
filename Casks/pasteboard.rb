@@ -39,15 +39,14 @@ cask "pasteboard" do
     if answer == "y"
       system_command "/usr/bin/defaults",
         args: ["write", "com.pasteboard.app", "pasteboardMonitoringEnabled", "-bool", "true"]
+      system_command "/usr/bin/defaults",
+        args: ["write", "com.pasteboard.app", "pasteboardHasLaunchedBefore", "-bool", "true"]
       puts "Monitoring enabled. Press ⌘⇧V to open your history."
     else
       system_command "/usr/bin/defaults",
         args: ["write", "com.pasteboard.app", "pasteboardMonitoringEnabled", "-bool", "false"]
-      puts "Monitoring is off. Enable it later via ⌘⇧V → Settings."
+      puts "Monitoring is off. PasteBoard will open Settings on first launch."
     end
-
-    system_command "/usr/bin/defaults",
-      args: ["write", "com.pasteboard.app", "pasteboardHasLaunchedBefore", "-bool", "true"]
 
     puts ""
     system_command "/usr/bin/open", args: ["-a", "PasteBoard"]
