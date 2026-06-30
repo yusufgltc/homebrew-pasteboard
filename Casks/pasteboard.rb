@@ -1,6 +1,6 @@
 cask "pasteboard" do
-  version "1.0.1"
-  sha256 "950353d4742cc777cb6e13a2f3fc0b2cb2b452e1c6254c1d9fc535d3425e7679"
+  version "1.0.2"
+  sha256 "501b4de9809cd6a42dc302d693953b16c2b5774fab8ed0ccfff1ffc013c6b3c2"
 
   url "https://github.com/yusufgltc/PasteBoard/releases/download/v#{version}/PasteBoard-#{version}.zip"
   name "PasteBoard"
