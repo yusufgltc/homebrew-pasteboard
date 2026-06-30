@@ -10,6 +10,40 @@ cask "pasteboard" do
   app "PasteBoard.app"
 
   postflight do
+    puts ""
+    puts "  ╭─────────────────────────────────────────────────────────╮"
+    puts "  │           PasteBoard — Clipboard Permission             │"
+    puts "  ╰─────────────────────────────────────────────────────────╯"
+    puts ""
+    puts "  PasteBoard records everything you copy so you can"
+    puts "  retrieve it later. All data stays on your Mac —"
+    puts "  nothing is sent to any server."
+    puts ""
+
+    if $stdin.isatty
+      print "  Enable clipboard monitoring? [y/N]: "
+      $stdout.flush
+      answer = ($stdin.gets || "").chomp.downcase
+    else
+      answer = "n"
+    end
+
+    puts ""
+
+    if answer == "y"
+      system_command "/usr/bin/defaults",
+        args: ["write", "com.pasteboard.app", "pasteboardMonitoringEnabled", "-bool", "true"]
+      puts "  ✓ Monitoring enabled. Press ⌘⇧V to open your history."
+    else
+      puts "  Monitoring is off. Press ⌘⇧V → Settings to enable it later."
+    end
+
+    # Mark first-launch as seen — the choice was made here in the terminal,
+    # so the app does not need to open Settings on first launch.
+    system_command "/usr/bin/defaults",
+      args: ["write", "com.pasteboard.app", "pasteboardHasLaunchedBefore", "-bool", "true"]
+
+    puts ""
     system_command "/usr/bin/open", args: ["-a", "PasteBoard"]
   end
 
@@ -30,8 +64,6 @@ cask "pasteboard" do
       │    │  ──────────  │    Tab  ·  Select an item               │
       │    │              │    ↵    ·  Paste                        │
       │    └──────────────┘                                          │
-      │                        Open Settings to enable               │
-      │                        clipboard monitoring.                 │
       │                                                              │
       ╰──────────────────────────────────────────────────────────────╯
     EOS
