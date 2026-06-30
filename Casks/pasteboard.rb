@@ -1,6 +1,6 @@
 cask "pasteboard" do
   version "1.0.0"
-  sha256 "7c89f595814b6019f00ae9269ce04acdaf6defdd5465f32318be1358fcff5a2e"
+  sha256 "516542205f6ee133969b667fafe1ea669745cb61675a524592e2b0d5495eec27"
 
   url "https://github.com/yusufgltc/PasteBoard/releases/download/v#{version}/PasteBoard-#{version}.zip"
   name "PasteBoard"
@@ -12,6 +12,9 @@ cask "pasteboard" do
   postflight do
     system_command "/usr/bin/open", args: ["-a", "PasteBoard"]
   end
+
+  uninstall quit:   "com.pasteboard.app",
+            delete: "~/Library/Preferences/com.pasteboard.app.plist"
 
   caveats do
     <<~EOS
