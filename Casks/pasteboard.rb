@@ -1,20 +1,14 @@
 cask "pasteboard" do
   version "1.0.0"
-  # After each release, update sha256 with:
-  #   shasum -a 256 PasteBoard-{version}.dmg
-  sha256 "REPLACE_WITH_SHA256_OF_DMG"
+  sha256 "7aaea61c2de703872453b010c23a7620bc01548d62d5f50de53f367320801b19"
 
-  url "https://github.com/ygultac/PasteBoard/releases/download/v#{version}/PasteBoard-#{version}.dmg"
+  url "https://github.com/ygultac/PasteBoard/releases/download/v#{version}/PasteBoard-#{version}.zip"
   name "PasteBoard"
   desc "Clipboard history manager for macOS"
   homepage "https://github.com/ygultac/PasteBoard"
 
-  # Minimum macOS version required by the app
-  depends_on macos: ">= :sequoia"
-
   app "PasteBoard.app"
 
-  # Remove all app data on `brew uninstall --zap pasteboard`
   zap trash: [
     "~/Library/Application Support/PasteBoard",
     "~/Library/Preferences/com.pasteboard.app.plist",
