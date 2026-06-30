@@ -4,42 +4,48 @@ cask "pasteboard" do
 
   url "https://github.com/yusufgltc/PasteBoard/releases/download/v#{version}/PasteBoard-#{version}.zip"
   name "PasteBoard"
-  desc "Clipboard history manager for older Macs"
+  desc "Clipboard history for Macs that can't upgrade to macOS Tahoe"
   homepage "https://github.com/yusufgltc/PasteBoard"
 
   app "PasteBoard.app"
 
+  caveats <<~'EOS'
+    Welcome to
+
+        ____             __       ____                       __
+       / __ \____ ______/ /____  / __ )____  ____ __________/ /
+      / /_/ / __ `/ ___/ __/ _ \/ __  / __ \/ __ `/ ___/ __  /
+     / ____/ /_/ (__  ) /_/  __/ /_/ / /_/ / /_/ / /  / /_/ /
+    /_/    \__,_/____/\__/\___/_____/\____/\__,_/_/   \__,_/
+
+    ⌘⇧V  open   Tab  navigate   ↵  paste   ⌫  delete
+
+    All data stays on your Mac.
+  EOS
+
+  preflight do
+    system_command "/bin/rm",
+      args: ["-rf", File.expand_path("~/Library/Application Support/PasteBoard")]
+    system_command "/bin/rm",
+      args: ["-f", File.expand_path("~/Library/Preferences/com.pasteboard.app.plist")]
+  end
+
   postflight do
-    puts ""
-    puts "  ╭─────────────────────────────────────────────────────────╮"
-    puts "  │           PasteBoard — Clipboard Permission             │"
-    puts "  ╰─────────────────────────────────────────────────────────╯"
-    puts ""
-    puts "  PasteBoard records everything you copy so you can"
-    puts "  retrieve it later. All data stays on your Mac —"
-    puts "  nothing is sent to any server."
-    puts ""
-
-    if $stdin.isatty
-      print "  Enable clipboard monitoring? [y/N]: "
-      $stdout.flush
-      answer = ($stdin.gets || "").chomp.downcase
-    else
-      answer = "n"
-    end
-
+    print "Enable clipboard monitoring? [y/N]: "
+    $stdout.flush
+    answer = $stdin.isatty ? ($stdin.gets || "").chomp.downcase : "n"
     puts ""
 
     if answer == "y"
       system_command "/usr/bin/defaults",
         args: ["write", "com.pasteboard.app", "pasteboardMonitoringEnabled", "-bool", "true"]
-      puts "  ✓ Monitoring enabled. Press ⌘⇧V to open your history."
+      puts "Monitoring enabled. Press ⌘⇧V to open your history."
     else
-      puts "  Monitoring is off. Press ⌘⇧V → Settings to enable it later."
+      system_command "/usr/bin/defaults",
+        args: ["write", "com.pasteboard.app", "pasteboardMonitoringEnabled", "-bool", "false"]
+      puts "Monitoring is off. Enable it later via ⌘⇧V → Settings."
     end
 
-    # Mark first-launch as seen — the choice was made here in the terminal,
-    # so the app does not need to open Settings on first launch.
     system_command "/usr/bin/defaults",
       args: ["write", "com.pasteboard.app", "pasteboardHasLaunchedBefore", "-bool", "true"]
 
@@ -48,26 +54,10 @@ cask "pasteboard" do
   end
 
   uninstall quit:   "com.pasteboard.app",
-            delete: "~/Library/Preferences/com.pasteboard.app.plist"
-
-  caveats do
-    <<~EOS
-      ╭──────────────────────────────────────────────────────────────╮
-      │                                                              │
-      │    ┌──────────────┐                                          │
-      │    │  ┌────────┐  │    PasteBoard #{version}                │
-      │    │  │        │  │                                          │
-      │    │  └────────┘  │    Clipboard history for Macs           │
-      │    │              │    that can't run macOS Tahoe.           │
-      │    │  ──────────  │                                          │
-      │    │  ──────────  │    ⌘⇧V  ·  Open clipboard history       │
-      │    │  ──────────  │    Tab  ·  Select an item               │
-      │    │              │    ↵    ·  Paste                        │
-      │    └──────────────┘                                          │
-      │                                                              │
-      ╰──────────────────────────────────────────────────────────────╯
-    EOS
-  end
+            delete: [
+              "~/Library/Preferences/com.pasteboard.app.plist",
+              "~/Library/Application Support/PasteBoard",
+            ]
 
   zap trash: [
     "~/Library/Application Support/PasteBoard",
